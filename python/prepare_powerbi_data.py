@@ -1,9 +1,12 @@
-"""Export a Power BI-ready star schema to powerbi/data/ (run analysis.py first).
+"""Export a Power BI-ready star schema to powerbi/data/ (run python/analysis.py first).
 
 fact_orders (1 row per order) -> dim_date, dim_state, dim_category, dim_seller
 """
+import os
 from pathlib import Path
 import pandas as pd
+
+os.chdir(Path(__file__).resolve().parents[1])  # run from project root, wherever launched
 
 OUT = Path("powerbi/data")
 OUT.mkdir(parents=True, exist_ok=True)

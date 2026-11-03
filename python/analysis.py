@@ -2,8 +2,9 @@
 
 Builds a clean order-level table, computes delivery/fulfillment KPIs,
 return-risk proxies (cancellations + low reviews), saves charts and summary tables.
-Run:  python analysis.py
+Run:  python python/analysis.py
 """
+import os
 from pathlib import Path
 import pandas as pd
 import matplotlib
@@ -11,11 +12,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+os.chdir(Path(__file__).resolve().parents[1])  # run from project root, wherever launched
+
 RAW = Path("data/raw")
 OUT = Path("outputs")
 FIG = OUT / "figures"
+TAB = OUT / "tables"
 PROC = Path("data/processed")
-for p in (FIG, PROC):
+for p in (FIG, TAB, PROC):
     p.mkdir(parents=True, exist_ok=True)
 sns.set_theme(style="whitegrid")
 
@@ -83,30 +87,30 @@ kpi = {
     "avg_review_score": round(d.review_score.mean(), 2),
     "return_risk_rate_pct": round(d.return_risk.mean() * 100, 2),
 }
-pd.Series(kpi).to_csv(OUT / "kpi_summary.csv", header=["value"])
+pd.Series(kpi).to_csv(TAB / "kpi_summary.csv", header=["value"])
 
 # ---------- Tables ----------
 state = deliv.groupby("customer_state").agg(orders=("order_id", "count"),
         avg_days=("delivery_days", "mean"), late_pct=("is_late", lambda s: s.mean() * 100),
         avg_review=("review_score", "mean")).round(2).sort_values("late_pct", ascending=False)
-state.to_csv(OUT / "delivery_by_state.csv")
+state.to_csv(TAB / "delivery_by_state.csv")
 
 cat = d.groupby("category").agg(orders=("order_id", "count"), revenue=("price", "sum"),
         risk_pct=("return_risk", lambda s: s.mean() * 100),
         avg_review=("review_score", "mean")).round(2)
 cat_top = cat[cat.orders >= 300].sort_values("risk_pct", ascending=False)
-cat_top.to_csv(OUT / "return_risk_by_category.csv")
+cat_top.to_csv(TAB / "return_risk_by_category.csv")
 
 sel = deliv.groupby("seller_id").agg(orders=("order_id", "count"),
         late_pct=("is_late", lambda s: s.mean() * 100),
         avg_review=("review_score", "mean")).round(2)
 sel = sel[sel.orders >= 30].sort_values("late_pct", ascending=False)
-sel.to_csv(OUT / "seller_scorecard.csv")
+sel.to_csv(TAB / "seller_scorecard.csv")
 
 rev_by_late = deliv.groupby(pd.cut(deliv.delay_days, [-100, 0, 3, 7, 14, 500],
         labels=["On time/early", "1-3 days late", "4-7 late", "8-14 late", "15+ late"]),
         observed=True).review_score.mean().round(2)
-rev_by_late.to_csv(OUT / "review_by_delay.csv")
+rev_by_late.to_csv(TAB / "review_by_delay.csv")
 
 # ---------- Charts ----------
 def save(name):

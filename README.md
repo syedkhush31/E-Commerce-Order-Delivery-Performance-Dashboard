@@ -32,7 +32,7 @@ Analysis of ~99K orders from the Olist Brazilian e-commerce marketplace (2016–
 - **Highest return-risk categories:** office_furniture (22.5%), audio (21.4%), home_confort (18.4%), bed_bath_table (16.4%, high volume).
 
 ## SQL analysis (`sql/`)
-Raw CSVs are loaded into SQLite (`load_db.py`), a reusable `order_facts` view is built (`sql/00_views.sql`),
+Raw CSVs are loaded into SQLite (`python/load_db.py`), a reusable `order_facts` view is built (`sql/00_views.sql`),
 and 8 queries answer the business questions using CTEs, window functions (`LAG`, `RANK`, `ROW_NUMBER`),
 multi-table joins and conditional aggregation. Results are saved to `outputs/sql/`.
 
@@ -56,48 +56,37 @@ Extra SQL findings:
 - Set realistic estimated delivery dates for northeast states, or add regional fulfillment hubs.
 - Proactively notify customers of delays before the promised date; the review penalty begins at 1–3 days late.
 - Review quality/packaging/description for office furniture and audio categories.
-- Put chronically late sellers (see `outputs/seller_scorecard.csv`) on improvement plans.
+- Put chronically late sellers (see `outputs/tables/seller_scorecard.csv`) on improvement plans.
 
 ## Project structure
 ```
-notebooks/             # narrated EDA notebook
-load_db.py             # loads CSVs into SQLite (data/olist.db)
-sql/                   # view + 8 analysis queries
-run_sql.py             # runs the queries, saves results to outputs/sql/
-analysis.py            # Python pipeline: clean -> KPIs -> tables -> charts -> dashboard data
-dashboard/app.py       # Streamlit dashboard
-powerbi/               # Power BI data model, DAX, theme, build guide
-requirements.txt
-data/raw/              # Olist CSVs (not committed)
-outputs/               # KPI summary, tables, figures/ and sql/
-```
-
-## Notebook (`notebooks/01_eda_order_fulfillment.ipynb`)
-A fully executed, narrated walkthrough: data-quality checks, cleaning and join logic (with a no-duplication assertion),
-feature engineering, KPIs, delivery/geography/review/category/seller analysis, and conclusions. GitHub renders it directly.
-
-## Power BI dashboard (`powerbi/`)
-Star-schema dataset (`powerbi/data/`: `fact_orders` + date/state/category/seller dimensions), 30+ DAX measures
-(`measures.dax`), a custom theme (`theme.json`) and a page-by-page build guide (`BUILD_GUIDE.md`) for a 5-page report:
-Executive Overview · Delivery Performance · Geography · Returns & Categories · Seller Scorecard.
-Regenerate the data with `python powerbi/prepare_powerbi_data.py`.
-
-## Interactive dashboard (Streamlit)
-`dashboard/app.py` is a 4-tab interactive dashboard (Delivery performance · Geography · Returns & categories · Sellers)
-with filters for month range, state and product category, plus KPI cards.
-It reads `dashboard/dashboard_data.csv.gz` (6 MB, committed), so it runs without the raw data.
-
-```bash
-pip install -r requirements.txt
-streamlit run dashboard/app.py
+.
+├── data/
+│   └── raw/                  # Olist CSVs (not committed; see Run it)
+├── python/                   # all Python scripts
+│   ├── analysis.py           # clean -> KPIs -> tables -> charts -> dashboard data
+│   ├── load_db.py            # loads CSVs into SQLite (data/olist.db)
+│   ├── run_sql.py            # runs the SQL queries, saves results
+│   └── prepare_powerbi_data.py
+├── sql/                      # order_facts view + 8 analysis queries
+├── notebooks/                # narrated EDA notebook
+├── dashboard/                # Streamlit app + its data
+├── powerbi/                  # star-schema data, DAX, theme, build guide
+├── outputs/
+│   ├── figures/              # PNG charts
+│   ├── tables/               # KPI + summary CSVs
+│   └── sql/                  # SQL query results
+├── documentation/
+├── requirements.txt
+└── README.md
 ```
 
 ## Run it
 ```bash
 pip install -r requirements.txt
 # place the Olist CSVs in data/raw/ (Kaggle: Brazilian E-Commerce Public Dataset by Olist)
-python load_db.py && python run_sql.py   # SQL layer
-python analysis.py                       # Python layer
+python python/load_db.py && python python/run_sql.py   # SQL layer
+python python/analysis.py                    # Python layer
 ```
 
 ## Charts

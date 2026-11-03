@@ -1,7 +1,10 @@
 """Load the raw Olist CSVs into a local SQLite database (data/olist.db)."""
 import sqlite3
+import os
 from pathlib import Path
 import pandas as pd
+
+os.chdir(Path(__file__).resolve().parents[1])  # run from project root, wherever launched
 
 RAW = Path("data/raw")
 db = Path("data/olist.db")

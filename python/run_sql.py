@@ -1,7 +1,10 @@
 """Run every sql/NN_*.sql query against data/olist.db and save results to outputs/sql/."""
 import sqlite3
+import os
 from pathlib import Path
 import pandas as pd
+
+os.chdir(Path(__file__).resolve().parents[1])  # run from project root, wherever launched
 
 out = Path("outputs/sql")
 out.mkdir(parents=True, exist_ok=True)
