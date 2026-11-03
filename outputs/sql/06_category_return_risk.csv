@@ -1,0 +1,16 @@
+category,orders,revenue,risk_pct,avg_review
+office_furniture,1265,273159.0,22.5,3.62
+audio,346,51316.0,21.4,3.84
+unknown,1416,179355.0,19.3,3.93
+home_confort,375,59093.0,18.4,3.88
+furniture_decor,6355,733561.0,16.2,4.02
+bed_bath_table,9311,1035736.0,16.2,3.98
+home_construction,473,82665.0,15.9,4.03
+computers_accessories,6660,910591.0,15.9,4.03
+baby,2839,411172.0,15.5,4.06
+telephony,4182,323928.0,15.4,4.01
+watches_gifts,5601,1202414.0,15.0,4.07
+furniture_living_room,417,69416.0,14.6,4.05
+auto,3880,592750.0,14.4,4.1
+construction_tools_construction,740,145419.0,14.3,4.09
+consoles_games,1058,157416.0,14.0,4.07

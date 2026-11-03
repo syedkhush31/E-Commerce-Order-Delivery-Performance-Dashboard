@@ -31,6 +31,27 @@ Analysis of ~99K orders from the Olist Brazilian e-commerce marketplace (2016–
 - **Same-state orders arrive ~2x faster** (8.0 vs 15.2 days) – seller distribution/regional fulfillment is a clear lever.
 - **Highest return-risk categories:** office_furniture (22.5%), audio (21.4%), home_confort (18.4%), bed_bath_table (16.4%, high volume).
 
+## SQL analysis (`sql/`)
+Raw CSVs are loaded into SQLite (`load_db.py`), a reusable `order_facts` view is built (`sql/00_views.sql`),
+and 8 queries answer the business questions using CTEs, window functions (`LAG`, `RANK`, `ROW_NUMBER`),
+multi-table joins and conditional aggregation. Results are saved to `outputs/sql/`.
+
+| Query | Question |
+|---|---|
+| 01_kpis | Headline KPIs |
+| 02_monthly_trend | Orders/revenue and month-over-month growth |
+| 03_late_by_state | Delivery performance by state |
+| 04_delivery_stages | Where does delivery time go? |
+| 05_review_vs_delay | How much does lateness hurt reviews? |
+| 06_category_return_risk | Return-risk by product category |
+| 07_seller_scorecard | Worst sellers by late rate (ranked) |
+| 08_repeat_customers | Customer retention |
+
+Extra SQL findings:
+- **Carrier transit is the bottleneck:** of 12.6 days total, 9.3 are carrier transit, 2.8 seller handling, 0.4 payment approval.
+- **Review penalty is steep:** 9% low reviews when on time, 19% at 1-3 days late, and 78% at 8+ days late.
+- **Low retention:** only 3.1% of customers ordered more than once, so a bad first delivery is rarely recovered.
+
 ## Recommendations
 - Set realistic estimated delivery dates for northeast states, or add regional fulfillment hubs.
 - Proactively notify customers of delays before the promised date; the review penalty begins at 1–3 days late.
@@ -39,16 +60,20 @@ Analysis of ~99K orders from the Olist Brazilian e-commerce marketplace (2016–
 
 ## Project structure
 ```
-analysis.py            # full pipeline: load -> clean -> KPIs -> tables -> charts
+load_db.py             # loads CSVs into SQLite (data/olist.db)
+sql/                   # view + 8 analysis queries
+run_sql.py             # runs the queries, saves results to outputs/sql/
+analysis.py            # Python pipeline: clean -> KPIs -> tables -> charts
 data/raw/              # Olist CSVs (not committed)
-outputs/               # KPI summary, tables and figures/
+outputs/               # KPI summary, tables, figures/ and sql/
 ```
 
 ## Run it
 ```bash
 pip install pandas matplotlib seaborn
 # place the Olist CSVs in data/raw/ (Kaggle: Brazilian E-Commerce Public Dataset by Olist)
-python analysis.py
+python load_db.py && python run_sql.py   # SQL layer
+python analysis.py                       # Python layer
 ```
 
 ## Charts
