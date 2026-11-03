@@ -66,6 +66,7 @@ sql/                   # view + 8 analysis queries
 run_sql.py             # runs the queries, saves results to outputs/sql/
 analysis.py            # Python pipeline: clean -> KPIs -> tables -> charts -> dashboard data
 dashboard/app.py       # Streamlit dashboard
+powerbi/               # Power BI data model, DAX, theme, build guide
 requirements.txt
 data/raw/              # Olist CSVs (not committed)
 outputs/               # KPI summary, tables, figures/ and sql/
@@ -74,6 +75,12 @@ outputs/               # KPI summary, tables, figures/ and sql/
 ## Notebook (`notebooks/01_eda_order_fulfillment.ipynb`)
 A fully executed, narrated walkthrough: data-quality checks, cleaning and join logic (with a no-duplication assertion),
 feature engineering, KPIs, delivery/geography/review/category/seller analysis, and conclusions. GitHub renders it directly.
+
+## Power BI dashboard (`powerbi/`)
+Star-schema dataset (`powerbi/data/`: `fact_orders` + date/state/category/seller dimensions), 30+ DAX measures
+(`measures.dax`), a custom theme (`theme.json`) and a page-by-page build guide (`BUILD_GUIDE.md`) for a 5-page report:
+Executive Overview · Delivery Performance · Geography · Returns & Categories · Seller Scorecard.
+Regenerate the data with `python powerbi/prepare_powerbi_data.py`.
 
 ## Interactive dashboard (Streamlit)
 `dashboard/app.py` is a 4-tab interactive dashboard (Delivery performance · Geography · Returns & categories · Sellers)

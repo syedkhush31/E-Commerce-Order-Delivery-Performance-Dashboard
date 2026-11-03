@@ -1,0 +1,85 @@
+// ============================================================
+// DAX measures - create these in the fact_orders table
+// (Modeling > New measure). Table names: fact_orders, dim_date
+// ============================================================
+
+// ---------- Volume & revenue ----------
+Total Orders = COUNTROWS ( fact_orders )
+
+Delivered Orders = SUM ( fact_orders[delivered] )
+
+Revenue =
+CALCULATE ( SUM ( fact_orders[payment_value] ), fact_orders[order_status] <> "canceled" )
+
+Avg Order Value = DIVIDE ( [Revenue], [Total Orders] )
+
+// ---------- Delivery performance ----------
+Avg Delivery Days =
+CALCULATE ( AVERAGE ( fact_orders[delivery_days] ), fact_orders[delivered] = 1 )
+
+Median Delivery Days =
+CALCULATE ( MEDIAN ( fact_orders[delivery_days] ), fact_orders[delivered] = 1 )
+
+Late Orders = SUM ( fact_orders[is_late] )
+
+Late Delivery % = DIVIDE ( [Late Orders], [Delivered Orders] )
+
+Avg Handling Days = AVERAGE ( fact_orders[handling_days] )
+
+Avg Transit Days = AVERAGE ( fact_orders[transit_days] )
+
+Avg Approval Days = DIVIDE ( AVERAGE ( fact_orders[approval_hrs] ), 24 )
+
+Avg Days Late (late orders only) =
+CALCULATE ( AVERAGE ( fact_orders[delay_days] ), fact_orders[is_late] = 1 )
+
+// ---------- Customer satisfaction ----------
+Avg Review Score = AVERAGE ( fact_orders[review_score] )
+
+Low Review % = DIVIDE ( SUM ( fact_orders[low_review] ), SUM ( fact_orders[has_review] ) )
+
+// ---------- Returns / risk (proxy: canceled or review <= 2) ----------
+Cancellation % = DIVIDE ( SUM ( fact_orders[is_cancelled] ), [Total Orders] )
+
+Return Risk Orders = SUM ( fact_orders[return_risk] )
+
+Return Risk % = DIVIDE ( [Return Risk Orders], [Total Orders] )
+
+Revenue at Risk = CALCULATE ( SUM ( fact_orders[payment_value] ), fact_orders[return_risk] = 1 )
+
+// ---------- Time intelligence (requires dim_date marked as date table) ----------
+Orders Prev Month =
+CALCULATE ( [Total Orders], DATEADD ( dim_date[date], -1, MONTH ) )
+
+Orders MoM % = DIVIDE ( [Total Orders] - [Orders Prev Month], [Orders Prev Month] )
+
+Revenue YTD = TOTALYTD ( [Revenue], dim_date[date] )
+
+// ---------- Comparison measures ----------
+Same-State Avg Days =
+CALCULATE ( [Avg Delivery Days], fact_orders[same_state] = 1 )
+
+Cross-State Avg Days =
+CALCULATE ( [Avg Delivery Days], fact_orders[same_state] = 0 )
+
+Overall Late % (all filters removed) =
+CALCULATE ( [Late Delivery %], ALL ( fact_orders ) )
+
+Late % vs Overall (pp) = [Late Delivery %] - [Overall Late % (all filters removed)]
+
+// ---------- Conditional-format / title helpers ----------
+Late % Color =
+SWITCH ( TRUE (),
+    [Late Delivery %] >= 0.15, "#D9534F",
+    [Late Delivery %] >= 0.08, "#F0AD4E",
+    "#5CB85C" )
+
+Dynamic Title =
+"Late delivery " & FORMAT ( [Late Delivery %], "0.0%" ) & " across "
+    & FORMAT ( [Delivered Orders], "#,0" ) & " delivered orders"
+
+// ---------- Seller scorecard ----------
+Seller Orders = CALCULATE ( [Delivered Orders] )
+
+Seller Late Rank =
+RANKX ( ALLSELECTED ( dim_seller[seller_id] ), [Late Delivery %], , DESC, Dense )
