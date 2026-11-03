@@ -63,14 +63,26 @@ Extra SQL findings:
 load_db.py             # loads CSVs into SQLite (data/olist.db)
 sql/                   # view + 8 analysis queries
 run_sql.py             # runs the queries, saves results to outputs/sql/
-analysis.py            # Python pipeline: clean -> KPIs -> tables -> charts
+analysis.py            # Python pipeline: clean -> KPIs -> tables -> charts -> dashboard data
+dashboard/app.py       # Streamlit dashboard
+requirements.txt
 data/raw/              # Olist CSVs (not committed)
 outputs/               # KPI summary, tables, figures/ and sql/
 ```
 
+## Interactive dashboard (Streamlit)
+`dashboard/app.py` is a 4-tab interactive dashboard (Delivery performance · Geography · Returns & categories · Sellers)
+with filters for month range, state and product category, plus KPI cards.
+It reads `dashboard/dashboard_data.csv.gz` (6 MB, committed), so it runs without the raw data.
+
+```bash
+pip install -r requirements.txt
+streamlit run dashboard/app.py
+```
+
 ## Run it
 ```bash
-pip install pandas matplotlib seaborn
+pip install -r requirements.txt
 # place the Olist CSVs in data/raw/ (Kaggle: Brazilian E-Commerce Public Dataset by Olist)
 python load_db.py && python run_sql.py   # SQL layer
 python analysis.py                       # Python layer

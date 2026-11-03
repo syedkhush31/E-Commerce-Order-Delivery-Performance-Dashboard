@@ -153,6 +153,18 @@ d.review_score.value_counts().sort_index().plot.bar(ax=ax, color="#2a6fdb", rot=
 ax.set_title("Review Score Distribution")
 save("08_review_distribution.png")
 
+# ---------- Compact dataset for the Streamlit dashboard (committed to the repo) ----------
+dash_cols = ["order_id", "order_status", "customer_state", "seller_id", "category", "month",
+             "price", "freight", "payment_value", "review_score", "approval_hrs", "handling_days",
+             "transit_days", "delivery_days", "delay_days", "is_late", "is_cancelled", "same_state"]
+dash = d[dash_cols].copy()
+dash["month"] = dash["month"].dt.strftime("%Y-%m")
+for c in ["price", "freight", "payment_value", "approval_hrs", "handling_days", "transit_days",
+          "delivery_days", "delay_days"]:
+    dash[c] = dash[c].round(2)
+Path("dashboard").mkdir(exist_ok=True)
+dash.to_csv("dashboard/dashboard_data.csv.gz", index=False, compression="gzip")
+
 print(pd.Series(kpi).to_string())
 print("\nReview by delay:\n", rev_by_late.to_string())
 print("\nWorst states:\n", state.head(5).to_string())
