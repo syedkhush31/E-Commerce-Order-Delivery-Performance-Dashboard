@@ -60,6 +60,7 @@ Extra SQL findings:
 
 ## Project structure
 ```
+notebooks/             # narrated EDA notebook
 load_db.py             # loads CSVs into SQLite (data/olist.db)
 sql/                   # view + 8 analysis queries
 run_sql.py             # runs the queries, saves results to outputs/sql/
@@ -69,6 +70,10 @@ requirements.txt
 data/raw/              # Olist CSVs (not committed)
 outputs/               # KPI summary, tables, figures/ and sql/
 ```
+
+## Notebook (`notebooks/01_eda_order_fulfillment.ipynb`)
+A fully executed, narrated walkthrough: data-quality checks, cleaning and join logic (with a no-duplication assertion),
+feature engineering, KPIs, delivery/geography/review/category/seller analysis, and conclusions. GitHub renders it directly.
 
 ## Interactive dashboard (Streamlit)
 `dashboard/app.py` is a 4-tab interactive dashboard (Delivery performance · Geography · Returns & categories · Sellers)
