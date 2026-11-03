@@ -1,0 +1,12 @@
+,value
+total_orders,99441.0
+delivered_orders,96478.0
+total_revenue_BRL,15865616.52
+avg_order_value_BRL,160.99
+avg_delivery_days,12.56
+median_delivery_days,10.22
+late_delivery_rate_pct,8.11
+cancellation_rate_pct,1.24
+low_review_rate_pct,14.69
+avg_review_score,4.09
+return_risk_rate_pct,14.84

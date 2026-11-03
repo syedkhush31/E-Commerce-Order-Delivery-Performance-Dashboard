@@ -1,0 +1,14 @@
+# Data (download from Kaggle: "Brazilian E-Commerce Public Dataset by Olist")
+data/raw/
+data/processed/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
