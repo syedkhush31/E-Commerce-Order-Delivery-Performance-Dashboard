@@ -1,0 +1,11 @@
+,auc_drop
+purchase_month,0.131
+promised_days,0.1174
+customer_state,0.0813
+freight,0.0333
+same_state,0.0119
+seller_state,0.0106
+category,0.0085
+items,0.0071
+price,0.0057
+purchase_dow,0.0029

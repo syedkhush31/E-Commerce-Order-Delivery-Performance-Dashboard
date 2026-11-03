@@ -91,9 +91,10 @@ with tab2:
     l.plotly_chart(px.bar(st_.sort_values("late_pct"), x="late_pct", y="customer_state", orientation="h",
                           title="Late delivery % by state", height=650,
                           color_discrete_sequence=["#d9534f"]), width='stretch')
-    r.plotly_chart(px.scatter(st_, x="avg_days", y="late_pct", size="orders", text="customer_state",
-                              title="Delivery time vs lateness (bubble = orders)", height=650),
-                   width='stretch')
+    fig_bub = px.scatter(st_, x="avg_days", y="late_pct", size="orders", text="customer_state",
+                         title="Delivery time vs lateness (bubble = orders)", height=650)
+    fig_bub.update_traces(textposition="top center", marker=dict(opacity=0.6))
+    r.plotly_chart(fig_bub, width='stretch')
     same = deliv.groupby("same_state").delivery_days.mean().rename({True: "Same state", False: "Different state"})
     st.plotly_chart(px.bar(same.reset_index(), x="same_state", y="delivery_days",
                            text=same.round(1).values, title="Avg delivery days: seller & customer in same state?"),

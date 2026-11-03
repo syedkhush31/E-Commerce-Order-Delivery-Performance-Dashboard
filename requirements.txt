@@ -3,3 +3,5 @@ matplotlib
 seaborn
 streamlit
 plotly
+scikit-learn
+playwright
